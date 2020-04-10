@@ -9,7 +9,7 @@ Add to composer.json:
 ``` json
 {
     "require": {
-        "data-dog/php-nsq": "~0.2.0"
+        "tomener/php-nsq": "~0.2.0"
     }
 }
 ```

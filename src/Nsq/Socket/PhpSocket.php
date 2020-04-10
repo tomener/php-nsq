@@ -88,6 +88,20 @@ class PhpSocket implements SocketInterface
     }
 
     /**
+     * @param $topic
+     * @param MessageInterface $msg
+     * @param $defer
+     * @return mixed|Response
+     */
+    public function publishDefer($topic, MessageInterface $msg, $defer)
+    {
+        $msg = $msg->payload();
+        $cmd = sprintf("DPUB %s %s\n%s%s", $topic, $defer, pack('N', strlen($msg)), $msg);
+        $this->write($cmd);
+        return $this->response();
+    }
+
+    /**
      * {@inheritDoc}
      */
     public function mpublish($topic, array $msgs)

@@ -15,11 +15,21 @@ interface SocketInterface
     /**
      * Publish a message to NSQ
      *
-     * @param string $topic
-     * @param \Nsq\MessageInterface $msg
-     * @return \Nsq\Response
+     * @param $topic
+     * @param MessageInterface $msg
+     * @return mixed
      */
     function publish($topic, MessageInterface $msg);
+
+    /**
+     * Publish a defer message to NSQ
+     *
+     * @param $topic
+     * @param MessageInterface $msg
+     * @param $defer
+     * @return mixed
+     */
+    function publishDefer($topic, MessageInterface $msg, $defer);
 
     /**
      * Publish multiple messages to NSQ
@@ -37,4 +47,3 @@ interface SocketInterface
      */
     function __toString();
 }
-

@@ -59,14 +59,26 @@ class NsqPool
     /**
      * Publish a message to NSQ
      *
-     * @param string $topic
-     * @param \Nsq\MessageInterface $msg
+     * @param $topic
+     * @param MessageInterface $msg
      * @param string $strategy
-     * @return void
      */
     public function publish($topic, MessageInterface $msg, $strategy = self::NSQ_AT_LEAST_ONE)
     {
         $this->doPublish($topic, array($msg), $strategy);
+    }
+
+    /**
+     * Publish a defer message to NSQ
+     *
+     * @param $topic
+     * @param MessageInterface $msg
+     * @param $defer
+     * @param string $strategy
+     */
+    public function publishDefer($topic, MessageInterface $msg, $defer, $strategy = self::NSQ_AT_LEAST_ONE)
+    {
+        $this->doPublish($topic, array($msg), $strategy, $defer);
     }
 
     /**
@@ -88,10 +100,11 @@ class NsqPool
      * @param string $topic
      * @param array $msgs
      * @param string $strategy
+     * @param string $defer
      *
      * @throws PubException - if strategy requirements are not met
      */
-    protected function doPublish($topic, array $msgs, $strategy)
+    protected function doPublish($topic, array $msgs, $strategy, $defer = 0)
     {
         $success = 0;
         $errs = array();
@@ -103,7 +116,11 @@ class NsqPool
                 if (count($msgs) > 1) {
                     $response = $connection->mpublish($topic, $msgs);
                 } else {
-                    $response = $connection->publish($topic, $msgs[0]);
+                    if ($defer == 0) {
+                        $response = $connection->publish($topic, $msgs[0]);
+                    } else {
+                        $response = $connection->publishDefer($topic, $msgs[0], $defer);
+                    }
                 }
                 if ($response->isOk()) {
                     $success++;

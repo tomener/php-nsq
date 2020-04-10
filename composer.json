@@ -1,12 +1,12 @@
 {
-    "name": "data-dog/php-nsq",
+    "name": "tomener/php-nsq",
     "description": "NSQ publisher for PHP",
     "type": "library",
     "license": "MIT",
     "keywords": [
         "nsq", "publisher", "pub"
     ],
-    "homepage": "https://github.com/DATA-DOG/php-nsq",
+    "homepage": "https://github.com/tomener/php-nsq",
 
     "require": {
         "php": ">=5.3.0",
