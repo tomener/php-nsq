@@ -93,7 +93,7 @@ class PhpSocket implements SocketInterface
      * @param $defer
      * @return mixed|Response
      */
-    public function publishDefer($topic, MessageInterface $msg, $defer)
+    public function deferPublish($topic, MessageInterface $msg, $defer)
     {
         $msg = $msg->payload();
         $cmd = sprintf("DPUB %s %s\n%s%s", $topic, $defer, pack('N', strlen($msg)), $msg);
@@ -104,7 +104,7 @@ class PhpSocket implements SocketInterface
     /**
      * {@inheritDoc}
      */
-    public function mpublish($topic, array $msgs)
+    public function multiPublish($topic, array $msgs)
     {
         if (!count($msgs)) {
             throw new \InvalidArgumentException("Expecting at least one message to publish.");

@@ -34,6 +34,8 @@ class NsqPool
      */
     protected $connections = array();
 
+    protected $strategy;
+
     /**
      * May take a connection list as separate arguments
      */
@@ -43,12 +45,14 @@ class NsqPool
         $this->connections = array_map(function (SocketInterface $connection) {
             return $connection;
         }, func_get_args());
+        $this->strategy = self::NSQ_AT_LEAST_ONE;
     }
 
     /**
      * Add a socket connection to NSQ node
      *
      * @param SocketInterface $connection
+     * @return NsqPool
      */
     public function addConnection(SocketInterface $connection)
     {
@@ -61,24 +65,11 @@ class NsqPool
      *
      * @param $topic
      * @param MessageInterface $msg
-     * @param string $strategy
+     * @param int $defer millisecond
      */
-    public function publish($topic, MessageInterface $msg, $strategy = self::NSQ_AT_LEAST_ONE)
+    public function publish($topic, MessageInterface $msg, $defer = 0)
     {
-        $this->doPublish($topic, array($msg), $strategy);
-    }
-
-    /**
-     * Publish a defer message to NSQ
-     *
-     * @param $topic
-     * @param MessageInterface $msg
-     * @param $defer
-     * @param string $strategy
-     */
-    public function publishDefer($topic, MessageInterface $msg, $defer, $strategy = self::NSQ_AT_LEAST_ONE)
-    {
-        $this->doPublish($topic, array($msg), $strategy, $defer);
+        $this->doPublish($topic, array($msg), $this->strategy, $defer);
     }
 
     /**
@@ -89,9 +80,19 @@ class NsqPool
      * @param string $strategy
      * @return void
      */
-    public function mpublish($topic, array $msgs, $strategy = self::NSQ_AT_LEAST_ONE)
+    public function multiPublish($topic, array $msgs, $strategy = self::NSQ_AT_LEAST_ONE)
     {
         $this->doPublish($topic, $msgs, $strategy);
+    }
+
+    /**
+     * 设置策略
+     *
+     * @param $strategy
+     */
+    public function strategy($strategy)
+    {
+        $this->strategy = $strategy;
     }
 
     /**
@@ -114,12 +115,12 @@ class NsqPool
         foreach ($this->connections as $connection) {
             try {
                 if (count($msgs) > 1) {
-                    $response = $connection->mpublish($topic, $msgs);
+                    $response = $connection->multiPublish($topic, $msgs);
                 } else {
                     if ($defer == 0) {
                         $response = $connection->publish($topic, $msgs[0]);
                     } else {
-                        $response = $connection->publishDefer($topic, $msgs[0], $defer);
+                        $response = $connection->deferPublish($topic, $msgs[0], $defer);
                     }
                 }
                 if ($response->isOk()) {
@@ -146,4 +147,3 @@ class NsqPool
         }
     }
 }
-

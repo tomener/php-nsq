@@ -29,7 +29,7 @@ interface SocketInterface
      * @param $defer
      * @return mixed
      */
-    function publishDefer($topic, MessageInterface $msg, $defer);
+    function deferPublish($topic, MessageInterface $msg, $defer);
 
     /**
      * Publish multiple messages to NSQ
@@ -38,7 +38,7 @@ interface SocketInterface
      * @param array $msgs - elements are instance of \Nsq\Message\MessageInterface
      * @return \Nsq\Response
      */
-    function mpublish($topic, array $msgs);
+    function multiPublish($topic, array $msgs);
 
     /**
      * Get string representation
