@@ -30,10 +30,21 @@ $nsq = new NsqPool(
     new PhpSocket('127.0.0.1', 4170)
 );
 
-$nsq->publish('my_topic', new JsonMessage(['message' => 'data']));
+$msg = [
+    'nickname' => 'tomener',
+    'sex' => 1
+];
+
+//single publish
+$nsq->publish('topic_name', new JsonMessage($msg));
+
+//defer publish
+$nsq->publish('topic_name', new JsonMessage($msg), 60000); //延迟60秒
+
+//multiple publish
+$msgs = [
+    new JsonMessage(['nickname' => 'tomener', 'sex' => 1]),
+    new JsonMessage(['nickname' => 'lucy', 'sex' => 2]),
+];
+$nsq->multiPublish('topic_name', $msgs);
 ```
-
-## Run tests
-
-    composer install
-    ./bin/phpspec run
